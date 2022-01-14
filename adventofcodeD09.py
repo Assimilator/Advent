@@ -1,9 +1,7 @@
 import sys
-
 import numpy as np
 import pandas as pd
 from scipy import ndimage
-
 
 def loadData():
     lines = open(sys.argv[1], "r").readlines()
@@ -22,7 +20,6 @@ def part1(map):
     print(np.sum(np.where( mins == True, map+1, 0)))
 
 def part2(map):
-
     # CCL by zeroed ridges, then flattening into 1d
     basins = ndimage.label(np.where((map == 9), 0, 1 ))[0].flatten()
     
@@ -32,7 +29,6 @@ def part2(map):
 
 def main():
     map = loadData()
-    # print(map)
     part1(map)
     part2(map)
 
