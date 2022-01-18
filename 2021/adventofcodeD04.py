@@ -1,15 +1,17 @@
+import sys
 import numpy as np
 import re
 
-inputFile=open('input8.txt')
-numbers=inputFile.readline().split(',')
-inputFile.readline()
-lines=inputFile.readlines()
 
-global boards
-boards = [];
+def loadData():
+    inputFile = open(sys.argv[1], "r")
+    numbers=inputFile.readline().split(',')
+    inputFile.readline()
+    lines=inputFile.readlines()
+    return numbers, lines
 
-def loadBoards(boards):
+def loadBoards(lines):
+    boards = []
     i=0
     board = np.zeros((2, 5, 5)).astype(int)
     board.fill(-1)
@@ -25,19 +27,31 @@ def loadBoards(boards):
             boards.append(board)
             board = np.zeros((2, 5, 5)).astype(int)
             board.fill(-1)
+    return boards
 
-def play(boards, numbers):
+def playP1(boards, numbers):
+    boardList = [1] * len(boards)
     for num in numbers:
         for boardIndex in range(len(boards)):
-            result = checkWin(boardIndex, int(num))
+            result = checkWin(boards, boardIndex, int(num), boardList)
             if result > 0:         
                 print(result) 
                 break
         if result > 0:         
             break
 
-def checkWin(boardIndex, num):
-    # print(num, boardIndex+1)
+def playP2(boards, numbers):
+    boardList = [1] * len(boards)
+    for num in numbers:
+        for boardIndex in range(len(boards)):
+            result = checkWin(boards, boardIndex, int(num), boardList)
+            if (result > 0 and not np.any(boardList)): 
+                print(result)
+                break
+        if (result > 0 and not np.any(boardList)):
+            break
+
+def checkWin(boards, boardIndex, num, boardList):
     indices = np.where(boards[boardIndex] == num)
     sum=0
     if(np.size(indices)):
@@ -48,20 +62,18 @@ def checkWin(boardIndex, num):
         sums1 = np.sum(boards[boardIndex], axis=1)
         win1 = np.where(sums1 == 0)
         if(np.any(win1)):
-            # print(sums1)
-            sum = calcVictory(boardIndex, num, x, y)            
+            boardList[boardIndex]=0
+            sum = calcVictory(boards, boardIndex, num, x, y)            
         else:
             sums2 = np.sum(boards[boardIndex], axis=2)
             win2 = np.where(sums2 == 0)
             if(np.any(win2)):
-                # print(sums2)
-                sum = calcVictory(boardIndex, num, x, y)
-    # print(sum, num)
+                boardList[boardIndex]=0
+                sum = calcVictory(boards, boardIndex, num, x, y)
     return sum*num
     
-def calcVictory(boardIndex, num, x, y):
+def calcVictory(boards, boardIndex, num, x, y):
     sum=0
-    # print(boards[boardIndex])
     for i in range(5):
         for j in range(5):
             if (boards[boardIndex][1][i][j] < 0):
@@ -69,10 +81,10 @@ def calcVictory(boardIndex, num, x, y):
     return sum
 
 def main():
-    loadBoards(boards)
-##    print('\n-- boards --\n')
-##    print(boards)
-    play(boards, numbers)
+    numbers, lines = loadData()
+    boards = loadBoards(lines)    
+    playP1(boards, numbers)
+    playP2(boards, numbers)
 
 if __name__ == '__main__':
     main()
