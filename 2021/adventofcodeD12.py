@@ -1,5 +1,4 @@
 import sys
-import numpy as np
 
 
 def loadData():
@@ -10,7 +9,7 @@ def loadData():
         links.append(line.strip().replace('\n','').split('-'))
     return links
 
-def processNodes(node, usedNodes, links):
+def processNodes(node, usedNodes, links, extraPass = 0, usedNode = ''):
     children = getChildren(node, links)
     ends = 0
     if len(children) == 0:
@@ -20,11 +19,11 @@ def processNodes(node, usedNodes, links):
     if node.islower():
         usedNodes.append(node)
     for child in children:
-        if child not in usedNodes and child != 'end':
-            # print(node, 'child', child, children)
-            # print('down')
-            ends += processNodes(child, usedNodes.copy(), links)
-    # print('up')
+        if child not in ['start', 'end']:
+            if child not in usedNodes:
+                ends += processNodes(child, usedNodes.copy(), links, extraPass, usedNode)
+            elif extraPass > 0 and usedNode == '':
+                ends += processNodes(child, usedNodes.copy(), links, extraPass, child)
     return ends
 
 def getChildren(node, links):
@@ -38,6 +37,8 @@ def getChildren(node, links):
 def main():
     links = loadData()
     count = processNodes('start', [], links)
+    print(count)
+    count = processNodes('start', [], links, 1, '')
     print(count)
 
 if __name__ == '__main__':
