@@ -11,26 +11,34 @@ def loadData():
         if ',' in line:
             indices.append([int(index) for index in line.strip().replace('\n','').split(',')])
         elif '=' in line:
-            #TODO: verify that the fold axis replacement is correct
+            #x and y are converted into axis values
             folds.append([int(fold) for fold in line.strip().replace('\n','').replace('fold along ','').replace('y','0').replace('x','1').split('=')])
-    return indices, np.array(folds)
+    return indices, folds
 
 def drawSheet(indices):
     sheet = np.zeros(np.amax(indices, axis=0)+1)
     for index in indices:
-        # print(index)
         sheet[index[0]][index[1]] += 1
     return sheet
 
 #TODO: complete the method
 def foldSheet(sheet, folds):
-    return 0
+    foldedSheet = []
+    if len(folds) > 0:
+        fold = folds.pop(0)
+        if fold[0] == 0:
+            foldedSheet = sheet[:,:fold[1]] + np.flip(sheet[:,fold[1]+1:], axis=1)
+        else:
+            foldedSheet = sheet[:fold[1],:] + np.flip(sheet[fold[1]+1:,:], axis=0)
+        return foldedSheet #foldSheet(foldedSheet.copy(), folds)   
+    else:
+        return sheet
 
 def main():
-    indices, folds = loadData()    
+    indices, folds = loadData()
     sheet = drawSheet(indices)
-    foldCount = foldSheet(sheet, folds)
-    print(foldCount)
+    foldedSheet = foldSheet(sheet.copy(), folds.copy())
+    print(np.sum(np.count_nonzero(foldedSheet)))
 
 if __name__ == '__main__':
     main()
