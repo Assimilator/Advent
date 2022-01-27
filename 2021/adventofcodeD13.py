@@ -1,6 +1,5 @@
 import sys
 import numpy as np
-from scipy import ndimage
 
 
 def loadData():
@@ -54,9 +53,12 @@ def main():
     
     # Part2 
     foldedSheet = foldSheet(sheet.copy(), folds.copy())
+    # Reorienting image for readability
     image = np.flip((np.where((foldedSheet > 0), '#', ' ' )), axis=0)
-    np.set_printoptions(threshold=sys.maxsize)
-    print(image)
+    rotImg = np.rot90(image, 3)
+    
+    for row in rotImg:
+        print(''.join(row))
 
 if __name__ == '__main__':
     main()
