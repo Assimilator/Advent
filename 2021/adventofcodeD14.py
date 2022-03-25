@@ -1,14 +1,12 @@
 import numpy as np
 import sys
 
-#Optimization
-import thread6
-import pathlib
-import timeit
+# Optimization
+# import timeit
 
 import matplotlib.pyplot as plt
 
-#AI
+# AI
 import pandas as pd
 import statsmodels.formula.api as smf
 
@@ -37,15 +35,16 @@ def main():
     list1 = []
     list2 = []
     list3 = []
-    # redo as recursion
-    for step in range(20):
+    
+    # Redo as recursion
+    for step in range(10):
         # print(step)
         # offset = 0
         newPolyIndices = np.zeros(0, dtype=int)
         newPolyValues = np.zeros(0)
         for rule in rules:
             
-            #this needs to be multithreaded
+            # This needs to be multithreaded
             indices = np.all(rolling_window(polymers) == rule[0], axis=1)
             
             ruleIndices = (np.mgrid[0:len(indices)][indices]).astype(int) +1
@@ -53,11 +52,11 @@ def main():
             # ruleValues = ruleIndices.copy().astype('str')
             # ruleValues.fill(rule[1])
             
-            #These two need to be cached
+            # These two need to be cached
             newPolyIndices = np.concatenate((newPolyIndices, ruleIndices), dtype=int)
-            newPolyValues = np.concatenate((newPolyValues, [(rule[1]) for i in ruleIndices]))
+            newPolyValues = np.concatenate(newPolyValues, [(rule[1]) for i in ruleIndices])
            
-            #Optimization
+            # Optimization
             # print(timeit.timeit(lambda: [(rule[1]) for i in ruleIndices], number=1))            
             # print(timeit.timeit(lambda: ruleIndices.astype('str').fill(rule[1]), number=1))
             
@@ -68,7 +67,7 @@ def main():
         # break
         polymers = np.insert(polymers, newPolyIndices, newPolyValues)
         
-        #Debugging
+        # Debugging
         # print('poly:', polymers)
         counts = np.unique(polymers, return_counts=True)
         
@@ -78,7 +77,7 @@ def main():
         list2.append([step+1, np.min(counts[1])])
         list3.append([step+1, np.max(counts[1]) - np.min(counts[1])])
         
-        #Plotting
+        # Plotting
         # plt.style.use('_mpl-gallery')
         # x = 0.5 + np.arange(8)
         # y = np.random.uniform(2, 7, len(x))
@@ -88,10 +87,10 @@ def main():
         # ax.set(xlim=(0, 8), xticks=np.arange(1, 8),
                # ylim=(0, 8), yticks=np.arange(1, 8))
         # plt.show()
-        # plt.savefig('plot.png')\
+        # plt.savefig('plot.png')
     print(list1)
     
-    #AI model training
+    # AI model training
     df1 = pd.DataFrame(list1, columns = ['steps','pol_values'])
     df2 = pd.DataFrame(list2, columns = ['steps','pol_values'])
     df3 = pd.DataFrame(list3, columns = ['steps','pol_values'])
@@ -104,7 +103,7 @@ def main():
     print("R-squared:", model.rsquared)
     
     
-    #Debugging
+    # Debugging
     # print(df1)
     # print(df1.steps, df1.pol_values)
     # print(df2)
