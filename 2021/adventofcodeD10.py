@@ -1,56 +1,69 @@
 import sys
-import numpy as np
-import pandas as pd
 from functools import lru_cache
 
+import numpy as np
+import pandas as pd
 
-openB =   np.array(['(','[','{','<'])
-closeB =  np.array([')',']','}','>'])
-points =  np.array([3, 57, 1197, 25137])
+if len(sys.argv) > 1:
+    file_name = sys.argv[1]
+else:
+    file_name = ""
+
+openB = np.array(['(', '[', '{', '<'])
+closeB = np.array([')', ']', '}', '>'])
+points = np.array([3, 57, 1197, 25137])
 pointsB = np.array([1, 2, 3, 4])
+illegal = 1
 
-def loadData():
-    return pd.read_csv(sys.argv[1], header=None).to_numpy()
-    
-def processRows(rows):
+
+def load_data(file):
+    return pd.read_csv(file, header=None).to_numpy()
+
+
+def process_rows(rows):
     illegals = []
     incompletes = []
-    totals = []
     for row in rows:
-        candidate = processRow(row.astype(str)[0])
-        processRow.cache_clear()
-        if candidate[0] == -1:
+        candidate = process_row(row.astype(str)[0])
+        process_row.cache_clear()
+        # print(candidate[0])
+        if candidate[0] == illegal:
             illegals.append(candidate[1])
         else:
             incompletes.append((candidate[1]))
-    print(np.sum(illegals))
-    print(int(np.median(incompletes)))
-    
+    return [np.sum(illegals), int(np.median(incompletes))]
+
+
 @lru_cache(256)
-def processRow(row):
+def process_row(row):
     if len(row) == 0:
         return [0, 0]
     elif row[0] in openB:
-        oIndex = np.where(openB == row[0])[0][0]
-        
-        trail = processRow(row[1:])
-        if trail[0] == 0:            
-            trail[1] = trail[1] * 5 + pointsB[oIndex]
+        o_index = np.where(openB == row[0])[0][0]
+        trail = process_row(row[1:])
+        # print(trail[0])
+        if trail[0] == 0:
+            trail[1] = trail[1] * 5 + pointsB[o_index]
+            # print(trail[1])
             return [0, trail[1]]
-        elif trail[0] == -1:
-            return trail 
+        elif trail[0] == illegal:
+            return trail
         else:
-            cIndex = np.where(closeB == trail[0])[0][0]
-            if oIndex == cIndex:
-                return processRow(trail[1:])
+            c_index = np.where(closeB == trail[0])[0][0]
+            if o_index == c_index:
+                return process_row(trail[1:])
             else:
-                return [-1, points[np.where(closeB == trail[0])[0]]]
+                return [illegal, points[np.where(closeB == trail[0])[0]]]
     else:
         return row
 
+
 def main():
-    rows = loadData()    
-    processRows(rows)    
+    rows = load_data(file_name)
+    part1, part2 = process_rows(rows)
+    print(part1)
+    print(part2)
+
 
 if __name__ == '__main__':
     main()

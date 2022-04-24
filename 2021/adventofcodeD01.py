@@ -1,26 +1,40 @@
-import numpy as np
-import pandas as pd
 import sys
 
-df = pd.read_csv(sys.argv[1], header=None)
+import numpy as np
+import pandas as pd
 
-## Convolve function returns a set of sums of a rolling window
-def rollingWindowSum(set, windowSize):
-    return np.convolve(set,np.ones(windowSize,dtype=int),'valid')
+if len(sys.argv) > 1:
+    file_name = sys.argv[1]
+else:
+    file_name = ""
 
-## Staggered comparison where increases are summed ones
-def part1(set):
-    x = set[:-1]
-    y = set[1:]
-    print(sum(np.where(x < y, 1, 0)))
-    
-## Redoing the comparison with size 3 window
-def part2(set):
-    part1(rollingWindowSum(set, 3))
-    
+
+def load_data(file):
+    return pd.read_csv(file, header=None).T.to_numpy()[0]
+
+
+# Convolve function returns a set of sums of a rolling window
+def rolling_window_sum(full_set, window_size):
+    return np.convolve(full_set, np.ones(window_size, dtype=int), 'valid')
+
+
+# Staggered comparison where increases are summed ones
+def part1(full_set):
+    x = full_set[:-1]
+    y = full_set[1:]
+    return sum(np.where(x < y, 1, 0))
+
+
+# Redoing the comparison with size 3 window
+def part2(full_set):
+    return part1(rolling_window_sum(full_set, 3))
+
+
 def main():
-    part1(df.T.to_numpy()[0])
-    part2(df.T.to_numpy()[0])
+    df = load_data(file_name)
+    print(part1(df))
+    print(part2(df))
+
 
 if __name__ == '__main__':
     main()
