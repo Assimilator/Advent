@@ -1,40 +1,53 @@
-import array
 import sys
 
-inputFile = open(sys.argv[1], "r")
-file = inputFile.readlines()    
+if len(sys.argv) > 1:
+    file_name = sys.argv[1]
+else:
+    file_name = ""
 
-def part1():
-    x=0
-    y=0
 
-    for line in file:
-        if('forward' in line):
+def load_data(file):
+    input_file = open(file, "r")
+    result = input_file.readlines()
+    input_file.close()
+    return result
+
+
+def part1(file_lines):
+    x = 0
+    y = 0
+
+    for line in file_lines:
+        if 'forward' in line:
             x += int(line[8:])
-        if('up' in line):
+        if 'up' in line:
             y -= int(line[3:])
-        if('down' in line):
+        if 'down' in line:
             y += int(line[5:])
-    print(x*y)
+    return x * y
 
-def part2():
-    x=0
-    y=0
-    aim=0
 
-    for line in file:
-        if('forward' in line):
+def part2(file_lines):
+    x = 0
+    y = 0
+    aim = 0
+
+    for line in file_lines:
+        if 'forward' in line:
             x += int(line[8:])
-            y += aim*int(line[8:])
-        if('up' in line):
+            y += aim * int(line[8:])
+        if 'up' in line:
             aim -= int(line[3:])
-        if('down' in line):
+        if 'down' in line:
             aim += int(line[5:])
-    print(x*y)
+    return x * y
+
 
 def main():
-    part1()
-    part2()
+    file = load_data(file_name)
+    print(part1(file))
+    print(part2(file))
+
 
 if __name__ == '__main__':
     main()

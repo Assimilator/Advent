@@ -1,35 +1,51 @@
-import numpy as np
 import sys
 from functools import lru_cache
 
+if len(sys.argv) > 1:
+    file_name = sys.argv[1]
+else:
+    file_name = ""
 
-def loadData():
-    inputFile = open(sys.argv[1], "r")
-    fishies = [(int(item)) for item in inputFile.readline().strip().replace('\n','').split(',')]
+
+def load_data(file):
+    input_file = open(file, "r")
+    fishies = [(int(item)) for item in input_file.readline().strip().replace('\n', '').split(',')]
+    input_file.close()
     return fishies
 
+
 @lru_cache(256)
-def fishPop(days, d = 0, t = 8):
-    fishCount = 0
+def fish_pop(days, d=0, t=8):
+    fish_count = 0
     for i in range(d, days):
         if t == 0:
             t = 7
-            fishCount += 1 + fishPop(days, i + 1)
+            fish_count += 1 + fish_pop(days, i + 1)
         t -= 1
-    return fishCount
+    return fish_count
+
+
+def part1(fishies):
+    fish_count = len(fishies)
+    for fish in fishies:
+        fish_count += fish_pop(80, 0, fish)
+    return fish_count
+
+
+def part2(fishies):
+    fish_count = len(fishies)
+    for fish in fishies:
+        fish_count += fish_pop(256, 0, fish)
+    return fish_count
+
 
 def main():
-    fishies = loadData()
+    fishies = load_data(file_name)
     # Part1
-    fishCount = len(fishies)
-    for fish in fishies:        
-        fishCount += fishPop(80, 0,fish)
-    print(fishCount)
+    print(part1(fishies))
     # Part2
-    fishCount = len(fishies)
-    for fish in fishies:        
-        fishCount += fishPop(256, 0,fish)
-    print(fishCount)
+    print(part2(fishies))
+
 
 if __name__ == '__main__':
     main()
