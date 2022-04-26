@@ -164,14 +164,16 @@ class advent2021TestCase(unittest.TestCase):
         self.assertEqual(745, d13.part1(sheet.copy(), folds.copy()))
 
     def test_D14_1(self):
-        data = d14.load_data("inputs/inputD14-1.txt")
-        self.assertEqual(1588, d14.part1(data))
-        self.assertEqual(2188189693529, d14.part2(data))
+        polymer, rules = d14.load_data("inputs/inputD14-1.txt")
+        pairs, tally = d14.start_pairs_tally(polymer)
+        self.assertEqual(1588, d14.stepper(rules, pairs.copy(), tally.copy(), 10))
+        self.assertEqual(2188189693529, d14.stepper(rules, pairs.copy(), tally.copy(), 40))
 
     def test_D14_2(self):
-        data = d14.load_data("inputs/inputD14-2.txt")
-        self.assertEqual(3406, d14.part1(data))
-        # self.assertEqual(324, d14.part2(data))
+        polymer, rules = d14.load_data("inputs/inputD14-2.txt")
+        pairs, tally = d14.start_pairs_tally(polymer)
+        self.assertEqual(3406, d14.stepper(rules, pairs.copy(), tally.copy(), 10))
+        self.assertEqual(3941782230241, d14.stepper(rules, pairs.copy(), tally.copy(), 40))
 
 
 if __name__ == '__main__':
